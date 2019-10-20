@@ -1,17 +1,25 @@
-# docker run -it \
-#   -e AWS_ACCESS_KEY_ID=secret \
-#   -e AWS_SECRET_ACCESS_KEY=secret \
-#   -e AWS_DEFAULT_REGION=us-east-1 \
-#   aws-cli aws
+FROM alpine:3.10.2
 
-FROM alpine:3.5
-
-RUN apk add --update \
+RUN set -ex \
+  \
+  && apk --no-cache \
+    add \
+      bash \
       ca-certificates \
+      curl \
+      groff \
+      jq \
+      less \
       python3 \
       py-pip \
-      && rm -rf /var/cache/apk/*
-
-RUN mkdir -p /tmp/build \
-      && pip install awscli \
-      && rm -rf /tmp/build
+  \
+  && pip install --no-cache-dir --upgrade pip \
+  \
+  && pip install --no-cache-dir \
+    awscli==1.16.263 \
+    s3cmd==2.0.0 \
+  \
+  && mkdir /root/.aws \
+  \
+  && aws --version \
+  && s3cmd --version
